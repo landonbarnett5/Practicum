@@ -1,0 +1,126 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class PersonGenerator {
+    public static void main(String[] args) {
+        // Create a scanner for user input
+        Scanner scanner = new Scanner(System.in);
+
+        // Use SafeInput for safe inputs
+        SafeInput safeInput = new SafeInput(scanner);
+
+        // Create an ArrayList to store Person objects
+        ArrayList<String> persons = new ArrayList<>();
+
+        // Loop to enter multiple records
+        while (true) {
+            // Collect person details
+            String id = safeInput.getString("Enter ID (string): ");
+            String firstName = safeInput.getString("Enter First Name: ");
+            String lastName = safeInput.getString("Enter Last Name: ");
+            String title = safeInput.getString("Enter Title (Mr., Mrs., etc.): ");
+            int yearOfBirth = safeInput.getInt("Enter Year of Birth (int): ");
+
+            // Combine the data into a record
+            String personRecord = id + ", " + firstName + ", " + lastName + ", " + title + ", " + yearOfBirth;
+
+            // Add the record to the list
+            persons.add(personRecord);
+
+            // Ask if the user wants to add another person
+            String continueInput = safeInput.getString("Do you want to enter another person? (yes/no): ");
+            if (continueInput.equalsIgnoreCase("no")) {
+                break;
+            }
+        }
+
+        // Ask the user for the file name to save the data
+        String fileName = safeInput.getString("Enter the name of the file to save the records: ");
+
+        // Write the records to the file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            for (String record : persons) {
+                writer.write(record);
+                writer.newLine();
+            }
+            System.out.println("Data saved successfully to " + fileName);
+        } catch (IOException e) {
+            System.out.println("Error writing to file: " + e.getMessage());
+        }
+    }
+import javax.swing.*;
+import java.io.*;
+import java.util.Scanner;
+
+class PersonReaderWithFileChooser {
+    public static void main(String[] args) {
+        // Open a JFileChooser to let the user select a file
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Select a Person Data File");
+
+        // Show the file chooser and get the user's choice
+        int result = fileChooser.showOpenDialog(null);
+
+        // If the user selected a file (not cancelled), proceed
+        if (result == JFileChooser.APPROVE_OPTION) {
+            // Get the selected file
+            File selectedFile = fileChooser.getSelectedFile();
+            String filePath = selectedFile.getAbsolutePath();
+            System.out.println("File selected: " + filePath);
+
+            // Check if the file exists
+            if (selectedFile.exists()) {
+                try (Scanner scanner = new Scanner(selectedFile)) {
+                    // Display header
+                    System.out.printf("%-10s %-15s %-15s %-10s %-4s%n", "ID#", "Firstname", "Lastname", "Title", "YOB");
+                    System.out.println("===============================================");
+
+                    // Read and display each record in the file
+                    while (scanner.hasNextLine()) {
+                        String line = scanner.nextLine();
+                        String[] data = line.split(", ");
+
+                        // Display formatted data
+                        System.out.printf("%-10s %-15s %-15s %-10s %-4s%n", data[0], data[1], data[2], data[3], data[4]);
+                    }
+                } catch (FileNotFoundException e) {
+                    System.out.println("Error: The file could not be read.");
+                }
+            } else {
+                System.out.println("Error: The selected file does not exist.");
+            }
+        } else {
+            System.out.println("No file selected or operation cancelled.");
+        }
+    }
+}
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class ProductWriter {
+    public static void main(String[] args) {
+        // Create an array of products to be written to the file
+        String[] products = {
+                "000001, Pipeweed, Long Bottom Leaf, 600.0",
+                "000002, Lembas, Elven Wayfare Bread, 200.0",
+                "000003, Wine, Woodland Elf Wine, 400.0",
+                "000004, Mushrooms, Farmer Took’s Finest, 125.0",
+                "000005, Mithril, Enchanted Dwarven Armor, 3000.0"
+        };
+
+        // Define the file to write the products to
+        String fileName = "ProductTestData.txt";
+
+        // Open the file for writing
+        try (FileWriter writer = new FileWriter(fileName)) {
+            // Write each product record to the file
+            for (String product : products) {
+                writer.write(product + "\n");
+            }
+            System.out.println("Product data written successfully to " + fileName);
+        } catch (IOException e) {
+            System.out.println("An error occurred while writing the file: " + e.getMessage());
+        }
+    }
+}
